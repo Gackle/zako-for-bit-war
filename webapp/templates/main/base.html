@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>{% block title %}{% endblock %} - 比特大战</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/semantic.css') }}">
+        <style>
+        .main.container {
+            margin-top: 7em;
+        }
+        </style>
+    </head>
+    <body>
+        <div class="ui large fixed inverted menu">
+            <div class="ui container">
+                <a href="{{url_for('main.index')}}" class="header item">
+                    <img class="logo", src="{{ url_for('static', filename='images/logo.png') }}" />
+                    Bit War
+                </a>
+                <div class="ui simple dropdown item">
+                    BattleField
+                    <i class="dropdown icon"></i>
+                    <div class="menu">
+                        <a class="item" href="{{ url_for('zako.pvp') }}">和玩家 PK </a>
+                        <a class="item" href="{{ url_for('zako.pve') }}">任务闯关</a>
+                    </div>
+                </div>
+                <div class="ui simple dropdown item">
+                    Zako 
+                    <i class="dropdown icon"></i>
+                    <div class="menu">
+                        <a class="item" href="{{url_for('zako.about')}}">关于 Zako 语言</a>
+                        <a class="item" href="{{url_for('zako.editor')}}">在线编辑器</a>
+                        <a class="item" href="{{url_for('zako.get_scripts_library')}}">脚本库</a>
+                    </div>
+                </div>
+                <div class="ui simple dropdown item">
+                    Forum
+                    <i class="dropdown icon"></i>
+                    <div class="menu">
+                        <a class="item" href="{{ url_for('forum.index', category='General', sort_key='recent', p=1) }}">综合</a>
+                        <a class="item" href="{{ url_for('forum.index', category='QA', sort_key='recent', p=1) }}">问答求助</a>
+                        <a class="item" href="{{ url_for('forum.index', category='Reality', sort_key='recent', p=1) }}">三次元</a>
+                        <a class="item" href="{{ url_for('forum.index', category='TechTalk', sort_key='recent', p=1) }}">技术讨论</a>
+                        <a class="item" href="{{ url_for('forum.index', category='Feedback', sort_key='recent', p=1) }}">意见反馈</a>
+                    </div>
+                </div>
+                <div class="right menu">
+                    {% if not g.current_user %}
+                    <div class="item">
+                        <div class="ui buttons">
+                            <div class="ui blue button" onclick="window.location.href='{{ url_for('main.login') }}'">登录</div>
+                            <div class="or"></div>
+                            <div class="ui green button" onclick="window.location.href='{{ url_for('main.register') }}'">注册</div>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="ui simple dropdown item">
+                        <img class="ui avatar image" src="{{ url_for('static', filename='uploads/avatars/' + g.current_user.username + '.jpg') }}">
+                        <span>{{ g.current_user.username }}</span>
+                        <div class="menu">
+                            <a class="item" href="{{ url_for('main.home', username=g.current_user.username) }}">进入主页</a>
+                            <a class="item" href="{{ url_for('main.logout') }}">登出</a>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="ui main text container">
+            {% block body %}
+            {% endblock %}
+        </div>
+        <!--<div class="ui inverted vertical footer segment"></div>-->
+        <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/semantic.js') }}"></script>
+        {% block js %}
+        {% endblock %}
+    </body>
+</html>

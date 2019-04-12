@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block title %}新用户注册{% endblock %}
+{% block body %}
+<style>
+    .show {
+        display: block!important;
+    }
+</style>
+<div class="ui middle aligned center aligned grid">
+    <div class="column">
+        <h2 class="ui teal header">
+            新用户注册
+        </h2>
+        <form class="ui large form" method="POST" action="{{ url_for('main.register') }}">
+            {{ form.hidden_tag() }}
+            <div class="ui stacked segment">
+                <div class="field">
+                    {% if form.username.errors %}
+                    {% for e in form.username.errors %}
+                        <p class="help-block">{{ e }}</p>
+                    {% endfor %}
+                    {% endif %}
+                    <div class="ui left icon input">
+                        <i class="user icon"></i>
+                        {{ form.username(placeholder=form.username.label.text)}}
+                    </div>
+                </div>
+                <div class="field">
+                    {% if form.email.errors %}
+                    {% for e in form.email.errors %}
+                        <p class="help-block">{{ e }}</p>
+                    {% endfor %}
+                    {% endif %}
+                    <div class="ui left icon input">
+                        <i class="mail icon"></i>
+                        {{ form.email(placeholder=form.email.label.text)}}
+                    </div>
+                </div>
+                <div class="field">
+                    {% if form.password.errors %}
+                    {% for e in form.password.errors %}
+                        <p class="help-block">{{ e }}</p>
+                    {% endfor %}
+                    {% endif %}
+                    <div class="ui left icon input">
+                        <i class="lock icon"></i>
+                        {{ form.password(placeholder=form.password.label.text)}}
+                    </div>
+                </div>
+                <div class="field">
+                    {% if form.confirm.errors %}
+                    {% for e in form.confirm.errors %}
+                        <p class="help-block">{{ e }}</p>
+                    {% endfor %}
+                    {% endif %}
+                    <div class="ui left icon input">
+                        <i class="lock icon"></i>
+                        {{ form.confirm(placeholder=form.confirm.label.text)}}
+                    </div>
+                </div>
+                <div class="field">
+                    {% if form.verification_code.errors %}
+                    {% for e in form.verification_code.errors %}
+                        <p class="help-block">{{ e }}</p>
+                    {% endfor %}
+                    {% endif %}
+                    <div class="ui left icon input">
+                        <img class="ui small image" src="{{ url_for('.get_verify_code') }}" onclick="this.src='{{ url_for('.get_verify_code') }}?'+Math.random();">
+                        {{ form.verification_code(placeholder="请填写 5 位验证码")}}
+                    </div>
+                </div>
+                <input type="submit" class="ui fluid large teal submit button" name="submit" value="注册">
+            </div>
+            <div class="ui error message {% if form.errors_msgs %} show {% endif %}" >
+                {% if form.errors_msgs %}
+                    <div class="header">出错信息</div>
+                    {% for e in form.errors_msgs %}
+                    <p>{{ e }}</p>
+                    {% endfor %}
+                {% endif %}
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

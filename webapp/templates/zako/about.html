@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% block title %}关于 Zako 语言{% endblock %}
+
+{% block body %}
+    <div class="ui grid" id="about">
+        <h1 class="ui header">关于 Zako 语言</h1>
+        <div class="row">
+            <div class="column">
+                <p>
+                    Zako 语言的设计初衷，来自于当初编译原理课程项目中对于实现「自私的基因」中类似于“囚徒困境”模拟，要求提供一种语言工具可以恰当的描述至少 5 种博弈的模拟，Zako 语言就是在这种情况下被创造出来了。
+                    <br/>
+                    严格来说，Zako 可能连 DSL 都算不上，充其量就是一个 Toy Script。但我的想法是语言始终是为场景服务的，既然我的目标是模拟，所以它得足够简单以至于能快速上手，才能不干扰我们模拟的进程。
+                    <br/>
+                    希望下面的在线语法手册可以帮助你理解这个语言 :) 。
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="ui grid" style="margin-top: 50px;" id="manual">
+        <h1 class="ui header">在线手册</h1>
+        <div class="row">
+            <div class="four wide column">
+                <div class="ui vertical fluid left menu">
+                    <a class="item active" id="define">定义</a>
+                    <a class="item" id="example">策略示例</a>
+                    <div class="ui item dropdown" id="token">
+                        <i class="dropdown icon"></i>
+                        语法
+                        <div class="menu">
+                            {% for token in token_list %}
+                            <div class="item">{{ token }}</div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="twelve wide stretched column content">
+                <div class="ui segment content" id="define-content">
+                    <h3 class="ui header">博弈</h3>
+                    <p>
+                        博弈是以<b>回合</b>计算。『比特大战』开始的时候需要设置博弈的回合数，每一轮的博弈需要博弈双方的输入，得到博弈回合各自的比分，即
+                        <br/>
+                        <pre style="color: #D6D6D6; background-color: rgb(93,93,93);text-align:center;">output(A, B) = f(input(A), input(B))</pre>
+                        其中：
+                        <ul>
+                            <li><span class="ui tiny pink header">output(A, B)</span> 为 A、B 双方得分，取值集合为 ((1,1), (0,5), (5,0), (3,3)) </li>
+                            <li><span class="ui tiny pink header">f(S(A), S(B))</span> 为博弈计算规则（即囚徒规则）</li>
+                            <li><span class="ui tiny pink header">input(X)</span> 为策略计算</li>
+                        </ul>
+                    </p>
+                    <div class="ui section divider"></div>
+                    <h3 class="ui header">策略</h3>
+                    <p>
+                        策略即是在每一次博弈中博弈双方 A、B 所做出选择的过程，利用上式可知：
+                        <pre style="color: #D6D6D6; background-color: rgb(93,93,93);text-align:center;">(1, 0) = input(X)</pre>
+                        可见<b>策略</b>也是 SGN 函数的一种。
+                    </p>
+                </div>
+                <div class="ui segment content" style="display: none; margin-top:0;" id="token-content">
+                    <h2 class="ui header"></h2>
+                    <div class="ui divider"></div>
+                    <h3 class="ui header">名称</h3>
+                    <p></p>
+                    <h3 class="ui header">用法</h3>
+                    <p></p>
+                    <h3 class="ui header">说明</h3>
+                    <p>说明</p>
+                </div>
+                <div class="ui segment content" id="example-content" style="display: none; margin-top:0;">
+                    <h3 class="ui small header">示例一：永远合作</h3>
+                    <pre>
+    Strategy AlwayWork:
+        return 1
+                    </pre>
+                    <div class="ui divider"></div>
+                    <h3 class="ui small header">示例二：随机背叛</h3>
+                    <pre>
+    Strategy RandomBetray:
+        i = RANDOM(3);
+        if(i==3)
+        {return 0}
+        else
+        {return 1}
+                    </pre>
+                    <div class="ui divider"></div>
+                    <p>更多的示例可以浏览公共库：<a href="{{ url_for('zako.get_scripts_library')}}">点我前往</a></p>
+                </div> 
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block js %}
+<script>
+    var token_dict= {{ token_dict|tojson }}
+</script>
+<script src="{{ url_for('static', filename='js/menu.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}论坛频道{% endblock %}
+{% block body %}
+<div class="ui grid">
+        <h1 class="ui header">论坛频道 - 发表新想法</h1>
+    <div class="row">
+        <div class="column">
+            <form class="ui form" method="POST" action='{{ url_for(".add_post")}}'>
+                {{ form.hidden_tag() }}
+                <div class="wide field">
+                    {{ form.title.label }}
+                    {% if form.title.errors %}
+                    {% for e in form.title.errors %}
+                        <p class="help-block">{{ e }}</p>
+                    {% endfor %}
+                    {% endif %}
+                    {{ form.title(class_='form-control') }}
+                </div>
+                <div class="field">
+                    {{ form.content.label }}
+                    {% if form.content.errors %}
+                    {% for e in form.content.errors %}
+                        <p class="help-block">{{ e }}</p>
+                    {% endfor %}
+                    {% endif %}
+                    {{ form.content(class_='form-control') }}
+                </div>
+                <div class="field">
+                    {{ form.category.label }}
+                    {% if form.category.errors %}
+                    {% for e in form.category.errors %}
+                        <p class="help-block">{{ e }}</p>
+                    {% endfor %}
+                    {% endif %}
+                    {{ form.category(class_='ui selection dropdown') }}
+                </div>
+                <button class="ui button right floated" type="submit">发表</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript" src="{{ url_for('static', filename='ckeditor/ckeditor.js') }}" ></script>
+<script>
+    CKEDITOR.replace('content');
+</script>
+{% endblock %}

@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block title %}论坛频道{% endblock %}
+{% block body %}
+<div class="ui grid">
+    <div class="row">
+        <div class="three wide column">
+            <img class="ui tiny centered image"
+                 data-variation="small" 
+                 data-tooltip="Hello，我是{{ post.user.nickname }}" 
+                 data-position="top center"
+                 src="{{ url_for('static', filename='uploads/avatars/' + post.user.username.lower() + '.jpg') }}" />
+        </div>
+        <div class="thirteen wide column">
+            <h1 class="ui header">{{ post.title }}</h1>
+        </div>
+    </div>
+    <div class="ui horizontal divider"> 正文内容 </div>
+    <div class="row">
+        <div class="column">
+            <div class="ui segment">
+                <p>{{ post.content|safe }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="ui horizontal divider"><i class="tag icon"></i> 评论区更精彩 </div>
+    <div class="row">
+        <div class="column">
+            {% if post.comments.all() | length > 0 %}
+            <div class="ui comments">
+                {% for comment in post.comments %}
+                <div class="comment">
+                    <a class="avatar">
+                        <img src="{{ url_for('static', filename='uploads/avatars/' + comment.user.username + '.jpg') }}">
+                    </a>
+                    <div class="content">
+                        <a class="author">{{ comment.user.nickname }}</a>
+                        <div class="metadata">
+                            <span class="date">{{ comment.date }}</span>
+                        </div>
+                        <div class="text">{{ comment.text }}</div>
+                        <div class="actions">
+                            
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <h4>还没有评论，还不来抢个沙发？</h4>
+            {% endif %}
+        </div>
+    </div>
+    {% if g.current_user %}
+    <div class="row">
+        <div class="column">
+            <form class="ui reply form" id="comment-form" method="POST" action="{{ url_for('forum.get_post', post_id = post.id) }}">
+                {{ form.hidden_tag() }}
+                <div class="field">
+                    {% if form.text.errors %}
+                    {% for e in form.text.errors %}
+                        <p class="help-block">{{ e }}</p>
+                    {% endfor %}
+                    {% endif %}
+                    {{ form.text(rows=4) }}
+                </div>
+                <div class="ui teal labeled submit icon button right floated"><i class="icon edit"></i>发表评论 </div>
+            </form>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript">
+    (function() {
+        $('.submit.button').click(function() {
+            $(this).parent().submit();
+            $('.field textarea').text("");
+        })
+    })();
+</script>
+{% endblock %}

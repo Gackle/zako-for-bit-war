@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+{% block title %}任务对战{% endblock %}
+{% block body %}
+<div class="ui grid">
+    <h1 class="ui header">对战任务</h1>
+    <div class="row">
+        <div class="ui form column">
+            <div class="ui field">
+                <div class="field">
+                    <label>设定的回合数</label>
+                    <select class="ui search dropdown" name="round">
+                        <option value="20">20</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                        <option value="200">200</option>
+                        <option value="500">500</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <div class="ui teal button" id="fight-btn">开始对战</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="six wide column">
+            <div class="ui segments">
+                <div class="ui segment">
+                    <h3 class="ui header">参赛策略选择</h3>
+                </div>
+                <div class="ui segments">
+                    {# 玩家策略加载 #}
+                    <div class="ui segment">
+                        <h4 class="ui header">玩家策略选择</h4>
+                        <div class="ui form">
+                            <div class="field">
+                                <select class="ui search dropdown" name="attacker">
+                                    {% for item in private %}
+                                    <option value="{{ item.id }}">{{ item.name[:-3] }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="ui segments">
+                    {# 公共库策略加载 #}
+                    <div class="ui segment">
+                        <h4 class="ui header">选择要对战的策略</h4>
+                        <div class="ui form">
+                            <div class="field">
+                                <select class="ui search dropdown" name="defender">
+                                    {% for item in public %}
+                                    <option value="{{ item.id }}">{{ item.name[:-3] }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="ten wide column">
+            <div class="ui segments" style="height: 500px;">
+                <div class="ui inverted dimmer" id="loading">
+                    <div class="ui text loader">比赛进行中</div>
+                </div>
+                <div class="ui segment" style="height: 100%;">
+                    <h3 class="ui header" id="tip-header">比赛经过</h3>
+                    <div id="live" style="overflow-y: auto;height: 95%;"></div>
+                </div>
+            </div>
+            <div class="ui segment" style="box-shadow: 2px 2px 3px #aaaaaa">
+                <h3>获胜方<span id="winner" style="padding-left: 50px"></span></h3>  
+                <h3>比&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;分<span id="score" style="padding-left: 50px"></span></h3>  
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script>
+    var fightBtn = $('#fight-btn');     // 开始战斗
+    var loading = $('#loading');        // 加载器
+    var attackerObj = $('select[name=attacker]');
+    var defenderObj = $('select[name=defender]');
+    var roundObj = $('select[name=round]');
+    var winnerObj = $('#winner');
+    var scoreObj = $('#score');
+    var liveObj = $('#live');
+
+    $('#fight-btn').click(function() {
+        // 发送数据
+        var attacker=attackerObj.val();
+        var defender=defenderObj.val();
+        var round=roundObj.val();
+        if(attacker == undefined || defender == undefined || round == undefined) {
+            return;
+        }
+        changeViewBeforeComeOut();
+        var data= {
+            attacker: attacker,
+            defender: defender,
+            round: round
+        }
+        $.ajax({
+                url:'{{ url_for("zako.fight") }}',
+                type:'POST',
+                data:data,
+                dataType: 'json',
+                success:function(res){
+                    console.log(res);
+                    changeViewAfterComeOut("success", res.flag, res.score, res.live);
+                },
+                error:function (res) {
+                    console.log(res);
+                    alert("战斗处理异常，请稍后再试!");
+                    changeViewAfterComeOut("failed");
+                }
+        });
+    });
+
+    var changeViewBeforeComeOut = function() {
+        // 禁用按钮
+        fightBtn.addClass('disabled');
+        // 加载遮罩
+        loading.addClass("active");
+        // 去掉战绩提示
+        winnerObj.text("");
+        scoreObj.text("");
+        // 去掉对战经过
+        liveObj.html("");
+    };
+
+    var changeViewAfterComeOut = function(flag, tip, score, live) {
+        // 启用按钮
+        fightBtn.removeClass("disabled");
+        // 去除遮罩
+        loading.removeClass("active");
+        if(flag != "failed") {
+            if(tip == "victory") {
+                winnerObj.css("color", "red").text("玩家获胜");
+                scoreObj.text(score);
+            }
+            else if(tip == "draw") {
+                winnerObj.css("color", "gray").text("打成平手");
+                scoreObj.text(score);
+            }
+            else {
+                winnerObj.css("color", "black").text("副本获胜");
+                scoreObj.text(score);
+            }
+            liveObj.html('<p>' + live + '</p>');
+        }
+    };
+
+</script>
+{% endblock %}

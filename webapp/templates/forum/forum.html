@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block title %}论坛频道{% endblock %}
+{% block body %}
+<div class="ui grid">
+    <h1 class="ui header">论坛频道 - {{ category.name  }}</h1>
+    <div class="row">
+        <div class="column">
+            <a class="ui left floated teal button" href="{{ url_for('forum.add_post', from=category.code) }}"><i class="idea icon"></i>我有新的想法</a>
+            <div class="ui buttons right floated">
+            <a class="ui brown button" href="{{ url_for('forum.index', category=category.code, sort_key='recent', p=1) }}">最新</a>
+                <div class="or"></div>
+            <a class="ui red button" href="{{ url_for('forum.index', category=category.code, sort_key='hotest', p=1) }}">最热</a>
+            </div>
+        </div>
+    </div>
+    <div class="ui horizontal divider"> {{ sort.name }} </div>
+    <div class="row">
+        <div class="column">
+            {% if posts.items %}
+            <div class="ui divided items">
+                {% for post in posts.items %}
+                <div class="item">
+                    <a class="ui tiny image">
+                    <img src="{{ url_for('static', filename='uploads/avatars/' + post.Post.user.username.lower() + '.jpg') }}" />
+                    </a>
+                    <div class="content">
+                        <a class="header" style="width: 80%" href="{{ url_for('forum.get_post', post_id=post.Post.id) }}">{{ post.Post.title }}</a><span class="ui right floated" style="width: 15%;text-overflow: ellipsis;white-space: nowrap;overflow: hidden;text-align: end;"><b>{{ post.Post.user.nickname }}</b></span>
+                        <div class="meta">
+                            <span class="ui left floated">发表于<span style="font: gray; padding-top: 4px; padding-left: 10px;">{{ post.Post.publish_date | datetimeformat("%Y-%m-%d %H:%M:%S") }}</span></span>
+                        </div>
+                        <div class="extra">
+                            <div class="ui label right floated">评论<div class="detail">{{ post.total_comments }}</div></div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="">
+                <i class="pointing up icon"></i>这里一片荒芜，暂无内容，要不试试发表你的新想法？
+            </div>  
+            {% endif %}
+        </div>
+    </div>
+    {% if posts.items %}
+    <div class="row">
+        <div class="column" style="text-align: center;">
+            {# 分页控件 #}
+            <a class="ui compact icon {% if not posts.has_prev %} disabled {% endif %} button" href="{{ url_for('forum.index', category=category.code, sort_key=sort.code, p=posts.prev_num) }}"><i class="left arrow icon"></i></a>
+            {% if posts.page != 1 %}
+            <a class="compact ui button" href="{{ url_for('forum.index', category=category.code, sort_key=sort.code, p=1) }}">1</a>
+                {% if posts.page > 2 %}    
+                    <span>...</span>
+                {% endif %}
+            {% endif %}
+            <a class="compact ui violet basic button">{{ posts.page }} </a>
+            {% if posts.page != posts.pages %}
+                {% if posts.pages-posts.page > 1 %}
+                    <span>...</span>
+                {% endif %}
+                <a class="compact ui button" href="{{ url_for('forum.index', category=category.code, sort_key=sort.code, p=posts.pages) }}">{{ posts.pages}}</a>
+            {% endif %}
+            <a class="ui compact icon {% if not posts.has_next %} disabled {% endif %} button" href="{{ url_for('forum.index', category=category.code, sort_key=sort.code, p=posts.next_num) }}"><i class="right arrow icon"></i></a>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+{% endblock %}

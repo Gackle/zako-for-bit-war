@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block title %}脚本库{% endblock %}
+{% block body %}
+
+<div class="ui grid">
+    <h1 class="ui header">Bit War 脚本库</h1>
+    <div class="sixteen wide column">
+        <div class="ui styled accordion">
+            <div class="active title"><i class="dropdown icon"></i> 公共库 </div>
+            <div class="active content">
+                <div class="ui three column grid transition">
+                    {% for item in public %} 
+                    <div class="column">
+                        <div class="ui fluid card">
+                            <div class="image" data-tooltip="{{ item.description }}" data-position="bottom center">
+                                <img src="{{ url_for('static', filename="images/script.jpg") }}">
+                            </div>
+                            <!-- <div class="ui small circular rotate reveal image">
+                                <div class="visible content">
+                                    <img src="{{ url_for('static', filename="images/script.jpg") }}">
+                                </div>
+                                <div class="hidden content">
+                                    <p>{{ item.description }}</p>
+                                </div>
+                            </div> -->
+                            <div class="content">
+                                <a style="word-wrap: break-word;word-break: break-word;">{{ item.name[:-3] }}</a>
+                                <div class="meta">
+                                    <span>创建于 <br/>{{ item.createtime | datetimeformat("%Y-%m-%d") }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% if g.current_user %}
+            <div class="title"><i class="dropdown icon"></i> 私有库 </div>
+            <div class="content">
+                <div class="ui three column grid transition">
+                    {% for item in private %} 
+                    <div class="column">
+                        <div class="ui fluid card">
+                            <div class="image" data-tooltip="{{ item.description }}" data-position="bottom center">
+                                <img src="{{ url_for('static', filename="images/script.jpg") }}">
+                            </div>
+                            <div class="content">
+                                <a class="ui tiny header" href="{{ url_for('zako.editor', script_id=item.id)}}">{{ item.name[:-3] }}</a>
+                                <div class="meta">
+                                    <a>创建于 <br/>{{ item.createtime | datetimeformat("%Y-%m-%d") }}</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+            
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block js %}
+<script>
+    (function() {
+        /* 初始化折叠控件 */
+        $('.ui.accordion')
+        .accordion();
+
+        $('.trigger.example .accordion')
+        .accordion({
+            selector: {
+                trigger: '.title .icon'
+            }
+        })
+        ;
+    })();
+</script>
+{% endblock %}

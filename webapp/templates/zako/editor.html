@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+{% block title %}Zako 在线编辑器{% endblock %}
+
+{% block body %}
+<div class="ui grid">
+    <h1 class="ui header">策略编辑器 - 基于 Zako</h1>
+    <div class="ten wide column">
+        <form class="ui form">
+            <div class="field">
+                <label>文件名<span style="color: red">*</span></label>
+                <input type="text" name="name" placeholder="例如：xxx.sg，默认后缀 .sg" {% if name %}value="{{ name }}" {% endif %}/>
+            </div>
+            <div class="field">
+                <label>描述</label>
+                <input type="text" name="description" placeholder="例如：永远合作" {% if description %}value="{{ description }}" {% endif %}/>
+            </div>
+            <div class="field">
+                <label>内容<span style="color: red">*</span></label>
+                <textarea name="content" >{% if content %}{{ content.strip() }}{% else %}Strategy Demo:
+    return 1{% endif %}</textarea>
+            </div>
+        </form>
+        <div class="ui buttons" style="margin-top: 20px">
+            {% if g.current_user %}
+            <button class="ui primary button" id="save">保存</button>
+            {% endif %}
+            <button class="ui secondary button" id="verify">校验</button>
+            <button class="ui button" id="upload">上传</button>
+        </div>
+    </div>
+    <div class="six wide column">
+        <div class="ui card" id="message-card">
+            <div class="content">
+                <div class="header">校验结果</div>
+                <div class="ui inverted divider"></div>
+                <div class="meta"><span class="ui tiny header"></span></div>
+                <div class="description">
+                    无校验结果
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="ten column" id="save-message">
+            <div class="ui warning message hidden"><i class="warning icon"></i><span></span></div>
+            <div class="ui positive message hidden"><i class="checkmark icon"></i><span></span></div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script>
+    $(function(){
+        // 显示校验信息
+        var showVerifyMessage = function(content, result_code) {
+            if (result_code == 0) {
+                $('#message-card .meta span').addClass('red').removeClass('green').removeClass('yellow').text('校验异常');
+                $('#message-card .description').text(content);
+            }
+            else if (result_code == -1) {
+                $('#message-card .meta span').addClass('yellow').removeClass('green').removeClass('red').text('失败');
+                $('#message-card .description').text("异常信息: " + content);
+            }
+            else if (result_code == 1) {
+                $('#message-card .meta span').addClass('green').removeClass('red').removeClass('yellow').text('成功');
+                $('#message-card .description').text("生成语法树: \r\n" + content);
+            }
+        };
+
+        // 显示保存信息
+        var showSaveMessage = function(content, isSuccess) {
+            if(isSuccess) {
+                $('#save-message div.warning.message').addClass('hidden');
+                $('#save-message div.positive.message').removeClass('hidden').find('span').text(content);
+                setTimeout(function() { $('#save-message div.positive.message').addClass('hidden'); }, 2500);
+            }
+            else {
+                $('#save-message div.positive.message').addClass('hidden');
+                $('#save-message div.warning.message').removeClass('hidden').find('span').text(content).show(20).addClass('hidden');
+                setTimeout(function() { $('#save-message div.warning.message').addClass('hidden'); }, 2500);
+            }
+        }
+
+        // 校验
+        $("#verify").click(function(){
+            var content=$('[name=content]').val();
+            var data= {
+                content: content
+            }
+            $.ajax({
+                url:'{{ url_for("zako.verify") }}',
+                type:'POST',
+                data:data,
+                dataType: 'json',
+                success:function(res){
+                    console.log(res);
+                    if(res.exception)
+                        showVerifyMessage(res.exception, -1);
+                    else
+                        showVerifyMessage(res.tree, 1);
+                },
+                error:function (res) {
+                    console.log(res);
+                    showVerifyMessage(res.responseText, 0);
+                }
+            })
+        });
+        
+        // 保存
+        $("#save").click(function(){
+            var name=$('[name=name]').val();
+            var description=$('[name=description]').val();
+            var content=$('[name=content]').val();
+            var url = '{{ url_for("zako.save_script", script_id = id if id) }}';
+            if(name.length == 0 || content.length == 0) {
+                alert('请填写策略文件名以及内容！');
+                return;
+            }
+                
+            var data= {
+                name: name,
+                description: description,
+                content: content
+            }
+                $.ajax({
+                url:url,
+                type:'POST',
+                data:data,
+                dataType: 'json',
+                success:function(res){
+                    console.log(res);
+                    showSaveMessage(res.message, true);
+                },
+                error:function (res) {
+                    showSaveMessage(res.responseText, false);
+                }
+            })
+        });
+    })
+</script>
+{% endblock %}

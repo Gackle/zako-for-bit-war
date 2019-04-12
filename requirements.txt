@@ -1,0 +1,11 @@
+Flask==0.12.2
+Flask-Admin==1.5.1
+Flask-Bcrypt==0.7.1
+Flask-Script==2.0.6
+Flask-SQLAlchemy==2.3.2
+Flask-WTF==0.14.2
+Jinja2==2.10
+Pillow==5.1.0
+ply==3.11
+SQLAlchemy==1.2.6
+pymysql==0.9.3

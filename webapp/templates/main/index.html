@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% block body %}
+    {% if notice %}    
+    <div class="ui inverted segment">
+        <p>最新公告: {{ notice }}</p>
+    </div>
+    {% endif %}
+    <div class="ui piled segment">
+        <div class="ui header">
+            <div class="content">What is Bit War? </div>
+            <div class="sub header">什么是『比特大战』？</div>
+        </div>
+        <p>
+            『比特大战』的含义来源于《自私的基因》一书中，也是博弈论中常见的“囚徒困境”的一种。
+        </p>
+        <p>
+            在『比特大战』中，在每一轮的博弈中存在着这样的博弈双方，他们之间可以选择“合作”或者“背叛”，根据自己的选择和对方的选择，经过一套规则计算可以得到它每一轮的得分。
+            在若干个回合之后，博弈双方的总分对比，高者胜低者负。
+        </p>
+    </div>
+    <div class="ui piled segment">
+        <div class="ui header">
+            <div class="content">Rule of Bit War? </div>
+            <div class="sub header">『比特大战』的规则</div>
+        </div>
+        <p>
+            『比特大战』的计算规则如下表格所示，其中竖列代表博弈方 <font color="red">A</font> 的选择，横行代表博弈方 <font color="blue">B</font> 的选择。
+        </p>
+        <p>
+            <table class="ui definition table">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>合作 work</th>
+                        <th>背叛 betray</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>合作 work</td>
+                        <td><font color="red">3</font>&nbsp;&nbsp;<font color="blue">3</font></td>
+                        <td><font color="red">0</font>&nbsp;&nbsp;<font color="blue">5</font></td>
+                    </tr>
+                    <tr>
+                        <td>背叛 betray</td>
+                        <td><font color="red">5</font>&nbsp;&nbsp;<font color="blue">0</font></td>
+                        <td><font color="red">1</font>&nbsp;&nbsp;<font color="blue">1</font></td>
+                    </tr>
+                </tbody>
+            </table>
+        </p>
+    </div>
+    <div class="ui piled segment">
+        <div class="ui header">
+            <div class="content">See a Bit War</div>
+            <div class="sub header">观摩一场『比特大战』</div>
+        </div>
+        <div>
+            <video src="http://vd3.bdstatic.com/mda-idbzmeb51dsjbv9h/mda-idbzmeb51dsjbv9h.mp4" controls="controls" width="100%"></video>
+        </div>
+    </div>
+{% endblock %}

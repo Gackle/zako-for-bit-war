@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block title %}用户登陆{% endblock %}
+{% block body %}
+<style>
+    .show {
+        display: block!important;
+    }
+</style>
+<div class="ui middle aligned center grid">
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <div class="row">
+        <div class="column">
+            <div class="ui info message">
+                <i class="close icon" id="close-tab"></i>
+                <div class="header">系统阻止了你的操作并要求你登录</div>
+                <ul class="list">
+                    {% for message in messages %}
+                        <li>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    {% endwith %}
+    <div class="row">
+        <div class="column">
+            <h2 class="ui teal header center aligned">
+                用户登陆
+            </h2>
+            <form class="ui large form" method="POST" action="{{ url_for('main.login') }}">
+                {{ form.hidden_tag() }}
+                <div class="ui stacked segment">
+                    <div class="field">
+                        <div class="ui left icon input">
+                            <i class="user icon"></i>
+                            {{ form.username(placeholder=form.username.label.text)}}
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="ui left icon input">
+                            <i class="lock icon"></i>
+                            {{ form.password(placeholder=form.password.label.text)}}
+                        </div>
+                    </div>
+                    <input type="submit" class="ui fluid large teal submit button" name="submit" value="登陆">
+                </div>
+                <div class="ui error message {% if form.errors_msgs %} show {% endif %}" >
+                    {% if form.username.errors %}
+                        <div class="header">无效的登陆行为</div>
+                        {% for e in form.errors_msgs %}
+                        <p>{{ e }}</p>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            </form>
+            <div class="ui message">
+                没有账号? 赶紧来<a href="{{ url_for('.register') }}">注册</a>吧!
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script>
+    (function() {
+        $('.message .close').on('click', function() {
+            $(this).closest('.message').transition('fade');
+        });
+    })();
+</script>
+{% endblock %}
